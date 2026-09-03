@@ -1,0 +1,23 @@
+{
+  "name": "three-skill-workbench",
+  "version": "0.1.0",
+  "description": "A unified entry point for requirement analysis, browser UI exploration, and UI acceptance execution.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Three Skill Workbench",
+    "shortDescription": "Route three testing skills from one entry point.",
+    "longDescription": "Choose requirement analysis, reverse UI exploration, or UI acceptance execution by mode, or run the supported workflow across them with explicit handoff and blocking checks.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "mode=requirement: review this requirement and design tests",
+      "mode=explore: reverse-test this Web page",
+      "mode=workflow: analyze, explore, then accept"
+    ],
+    "brandColor": "#2563EB"
+  }
+}
