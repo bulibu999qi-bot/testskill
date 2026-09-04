@@ -1,0 +1,20 @@
+{
+  "name": "testskill",
+  "interface": {
+    "displayName": "Test Skill"
+  },
+  "plugins": [
+    {
+      "name": "three-skill-workbench",
+      "source": {
+        "source": "local",
+        "path": "./three-skill-workbench"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
