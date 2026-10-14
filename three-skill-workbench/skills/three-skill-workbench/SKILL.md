@@ -5,7 +5,7 @@ description: "统一入口：按 mode 选择需求测试分析、Web UI 逆向�
 
 # Three Skill Workbench 统一入口
 
-本入口负责路由，不替代下面三个专业 skill 的规则。执行前先判断模式，并完整遵守被路由 skill 的硬规则。
+本入口负责路由，不替代下面专业 skill 的规则。执行前先判断模式和可选 profile，并完整遵守被路由 skill 的硬规则。
 
 ## 模式
 
@@ -18,6 +18,18 @@ description: "统一入口：按 mode 选择需求测试分析、Web UI 逆向�
 | `acceptance` | `workbench-ui-acceptance-execution` | 已有测试用例、环境地址和执行前置 | 浏览器 UI 验收、截图和离线 HTML 报告 |
 | `workflow` | 按下述顺序串联 | 希望从需求到验收形成闭环 | 每阶段结论和下一阶段输入 |
 
+## `profile=high-frequency`
+
+`profile` 是 `explore` 的附加策略，不是第四个顶层模式。
+
+| 调用 | 路由 |
+| --- | --- |
+| `mode=explore profile=high-frequency` | 以 `reverse-test-workbench` 为执行内核，同时加载 `high-frequency-ui-risk-exploration` |
+| `mode=workflow profile=high-frequency` | `requirement` 输出探索交接，`explore` 加载高频策略，`acceptance` 保持原合同 |
+| `mode=requirement profile=high-frequency` | 仍由 `requirement-test-workbench` 分析需求，并额外输出独立探索交接 |
+
+未指定 `profile` 时保持各模式原行为。显式 `skill=high-frequency-ui-risk-exploration` 时，必须同时加载 `reverse-test-workbench`，不能脱离浏览器执行与证据规则单独运行。
+
 自然语言映射：
 
 - “评审需求 / 提测试点 / 写测试用例 / 接口专项” -> `requirement`
@@ -29,8 +41,8 @@ description: "统一入口：按 mode 选择需求测试分析、Web UI 逆向�
 
 按以下顺序执行，每阶段结束时先输出阶段结论、证据、未解决问题和结构化交接信息：
 
-1. `requirement`：先做输入质量判断。L0 需求必须停在澄清门禁；未确认 P0 规则时不得包装成正式用例。
-2. `explore`：仅在有精确 Web URL 且 Playwright 执行器可用时进入。复用已确认的需求口径；没有 URL 或执行器能力时记录阻塞，不猜测页面事实。
+1. `requirement`：先做输入质量判断。L0 需求必须停在澄清门禁；未确认 P0 规则时不得包装成正式用例。`profile=high-frequency` 时另行输出 `requirement-exploration-handoff.json`，不改变正式用例表结构。
+2. `explore`：仅在有精确 Web URL 且 Playwright 执行器可用时进入。复用已确认的需求口径；没有 URL 或执行器能力时记录阻塞，不猜测页面事实。`profile=high-frequency` 时在 B01 后由高频策略选择适用探针，并先完成本轮数据写入授权。
 3. `acceptance`：仅在存在可执行用例、测试环境和必要账号/权限/数据时进入。使用前两阶段的确认口径和探索证据；缺少必要前置时停止并标记阻塞。
 
 阶段之间不得把“计划完成”当成“系统验证通过”。后续阶段只消费前一阶段实际交付的资产；不存在或不完整的资产必须明确标记为待确认/未覆盖。
@@ -38,6 +50,7 @@ description: "统一入口：按 mode 选择需求测试分析、Web UI 逆向�
 ## 输出约定
 
 - 开头说明：`mode`、输入质量、当前阶段和范围边界。
+- 指定 `profile` 时同时说明 profile、数据权限状态和额外覆盖边界。
 - 单模式只交付该 skill 定义的产物，不机械扩展成全量。
 - `workflow` 以阶段小节分隔，并在末尾给出已回答、未回答、阻塞和下一步。
 - 不编造账号、页面行为、接口字段、预期结果或测试通过结论。
